@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>San Valentín</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+        body {
+            text-align: center;
+            font-family: "Pacifico", cursive;
+            background-color: #FFC0CB;
+            background-image: url('https://static.vecteezy.com/system/resources/previews/014/412/602/non_2x/valentines-day-background-with-paper-hearts-v-free-vector.jpg');
+            color: #fff;
+            transition: all 3s ease-in-out;
+        }
+
+        .container {
+            margin-top: 15%;
+        }
+
+        .buttons {
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        .yes {
+            background-color: #FF1493;
+            color: white;
+        }
+
+        .no {
+            background-color: #DC143C;
+            color: white;
+            position: absolute;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(100px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message {
+            font-size: 24px;
+            font-weight: bold;
+            opacity: 0;
+            animation: fadeIn 6s ease-in-out forwards;
+            text-shadow: 2px 2px 5px #ffffff;
+        }
+
+        .sunflowers {
+            width: 300px;
+            height: auto;
+            opacity: 0;
+            animation: floatIn 6s ease-out 4s forwards;
+        }
+
+        .fireworks {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <audio id="background-music" loop>
+        <source src="https://www.dropbox.com/s/your-audio-file.mp3?raw=1" type="audio/mp3">
+    </audio>
+
+    <div class="container" id="question">
+        <h1>¿Quieres ser mi San Valentín?</h1>
+        <div class="buttons">
+            <button class="yes" onclick="accept()">Sí</button>
+            <button class="no" id="no-button" onmouseover="moveButton()">No</button>
+        </div>
+    </div>
+
+    <div id="response" class="hidden message-container">
+        <h1 class="message" id="love-message"></h1>
+        <h1 class="message hidden" id="final-message">
+            Gracias, amor, por ser mi San Valentín este año. Tal vez el año pasado no pude serlo, 
+            pero me esforzaré para ser el mejor San Valentín de todos los que has tenido. 
+            Te amo mucho, mucho, como una vaquita, ¡muuuuucho! ❤️
+        </h1>
+        <img class="sunflowers hidden" src="https://png.pngtree.com/png-clipart/20230510/original/pngtree-sunflower-bouquet-png-image_9155155.png" alt="Girasoles">
+        <canvas class="fireworks hidden" id="fireworks"></canvas>
+    </div>
+
+    <script>
+        let noButtonHoverCount = 0;
+
+        function accept() {
+            document.getElementById("love-message").innerText = "Ya lo sabía, porque tú eres mía y yo soy tuyo.";
+            setTimeout(() => {
+                document.getElementById("love-message").classList.add("hidden");
+                document.getElementById("final-message").classList.remove("hidden");
+                setTimeout(startFireworks, 8000); // Ahora dura más en pantalla antes de los fuegos artificiales
+            }, 20000);
+            startLoveSequence();
+        }
+
+        function reject() {
+            document.getElementById("love-message").innerText = "Oye, ¿por qué intentas rechazarme? Pero no me importa, igual serás mi San Valentín ❤️";
+            setTimeout(() => {
+                document.getElementById("love-message").classList.add("hidden");
+                document.getElementById("final-message").classList.remove("hidden");
+                setTimeout(startFireworks, 8000);
+            }, 12000);
+            startLoveSequence();
+        }
+
+        function moveButton() {
+            noButtonHoverCount++;
+            if (noButtonHoverCount >= 5) {
+                reject();
+                return;
+            }
+            let button = document.getElementById("no-button");
+            button.style.position = "absolute";
+            let x = Math.random() * (window.innerWidth - 100);
+            let y = Math.random() * (window.innerHeight - 50);
+            button.style.left = `${x}px`;
+            button.style.top = `${y}px`;
+        }
+
+        function startLoveSequence() {
+            document.getElementById("background-music").play();
+            document.body.style.backgroundImage = "none";
+            document.body.style.backgroundColor = "#000033";
+            document.body.style.color = "#fff";
+            document.getElementById("question").classList.add("hidden");
+            document.getElementById("response").classList.remove("hidden");
+            setTimeout(() => {
+                document.querySelector(".sunflowers").classList.remove("hidden");
+            }, 4000);
+        }
+
+        function startFireworks() {
+            document.getElementById("fireworks").classList.remove("hidden");
+
+            const canvas = document.getElementById("fireworks");
+            const ctx = canvas.getContext("2d");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let fireworksound = new Audio("https://www.myinstants.com/media/sounds/minecraft-fireworks.mp3");
+            fireworksound.volume = 0.5;
+            fireworksound.play();
+
+            let particles = [];
+            function createParticle(x, y) {
+                for (let i = 0; i < 30; i++) {
+                    particles.push({
+                        x: x,
+                        y: y,
+                        radius: Math.random() * 3 + 1,
+                        color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+                        velocityX: (Math.random() - 0.5) * 5,
+                        velocityY: (Math.random() - 0.5) * 5,
+                        life: 100
+                    });
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach((particle, index) => {
+                    particle.x += particle.velocityX;
+                    particle.y += particle.velocityY;
+                    particle.life -= 1;
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    if (particle.life <= 0) particles.splice(index, 1);
+                });
+
+                if (Math.random() < 0.1) createParticle(Math.random() * canvas.width, Math.random() * canvas.height / 2);
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+    </script>
+</body>
+</html>
